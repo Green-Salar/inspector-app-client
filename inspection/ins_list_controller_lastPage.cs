@@ -28,10 +28,10 @@ public class ins_list_controller_lastPage : MonoBehaviour
             foreach (var kvp in dictionary)
             {
                 //string value = kvp.Value.Replace("'", " ");
-                if (kvp.Key != "json") s = s + '"' + kvp.Key + '"' + ":" + '"' + kvp.Value + '"' + ",";
+                if (kvp.Key != "json") s = s + '"' + kvp.Key + '"' + ":" + '"' + kvp.Value.Replace("\"", "inch").Replace("'", "`") + '"' + ",";
             }
             s = s.Remove(s.Length - 1, 1);
-            s =s.Replace("'", " ");
+            s =s.Replace("'", "`");
             return "{" + s + "}";
         }
         catch { return "EROR!"; }

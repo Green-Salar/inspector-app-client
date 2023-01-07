@@ -1,14 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mono.Data.Sqlite;
-using Mono.Data;
+using Mono.Data.Sqlite; 
 using System.Data;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using Newtonsoft.Json;
-
-public class inspect_loader : MonoBehaviour
+using UnityEngine.SceneManagement;  
+public class review_inspect_loader : MonoBehaviour
 {   
 
     [SerializeField]
@@ -87,7 +84,7 @@ public class inspect_loader : MonoBehaviour
         string id = idLoc[0];
         string Loc = idLoc[1];
 
-        Debug.Log(canvRect.height);
+        //Debug.Log(canvRect.height);
         panelToAttachButtonsTo = canv;
         canvRect.height = canvRect.height + btnRect.height;
         canvRTrans.sizeDelta = new Vector2( canvRect.width, canvRect.height + btnRect.height);
@@ -102,8 +99,28 @@ public class inspect_loader : MonoBehaviour
     
     void OnClick(string id)
     {
-        Report_Manager.review_ID = id;
-        SceneManager.LoadScene("review_scene", LoadSceneMode.Additive);        
+        Debug.Log("bring it on:)" + id);
+        //Report_Manager.review_ID = id;
+        //SceneManager.LoadScene("review_scene", LoadSceneMode.Additive);
+
+        Dictionary<string, string> insList = sql_handler.find_by_ID("inspectionsENFR", id);
+        foreach (var i in insList)
+        {
+            Debug.Log(i.Key + i.Value);
+        }
+        StartCoroutine(Count(insList));
+        //playerPrefsMANAGER.ins_list = insList;
+        //SceneManager.LoadScene("ins_page1", LoadSceneMode.Additive);
+        
+    }
+
+
+    // the coroutine
+    private IEnumerator Count(Dictionary<string, string>  insList)
+    {
+        SceneManager.LoadScene("ins_review_1", LoadSceneMode.Additive);
+        yield return new WaitForSeconds(.2f);
+        playerPrefsMANAGER.ins_list = insList;
     }
 
 }

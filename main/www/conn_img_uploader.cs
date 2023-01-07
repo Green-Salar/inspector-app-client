@@ -15,8 +15,8 @@ using UnityEngine.SceneManagement;
 public class conn_img_uploader : MonoBehaviour
 {
     // Start is called before the first frame update
-    
-    
+
+    static int err_check = 0;
     public void takePic(){
         
         // Create a texture the size of the screen, RGB24 format
@@ -38,28 +38,34 @@ public class conn_img_uploader : MonoBehaviour
     }
 
 
-
+    
     public void savePic(){
 
     }
 
         public async void OnStartButtonClick()
         {
-            SceneManager.LoadScene("loading_scene", LoadSceneMode.Additive); 
+        Screen_Manager.load_loading();
             Dictionary<string,Dictionary<string,string>  > imgs_dict = sql_handler.sql_imgs_dictionaries();
             foreach(var kvp in imgs_dict){
-                 
                 await Upload(kvp.Key , kvp.Value );
-
-            }
+                Debug.Log("errr ==>> check ==>> " + err_check.ToString());
+            
+                }
+        if (err_check == 0) { Screen_Manager.unload_loading(); Debug.Log("shod?"); }
+            
         }
         async Task Upload(string ID, Dictionary<string,string> img_names)
         {
 
             foreach (var kvp in img_names)
             {
-                int contentLength = await UploadTask( ID  ,kvp.Key,kvp.Value  );
-                Debug.Log(" from upload task"+kvp.Key+"_ID:"+ID+"_result:"+contentLength.ToString());
+                if (kvp.Value != "-") 
+                { 
+                        int contentLength = await UploadTask(ID, kvp.Key, kvp.Value); 
+                        Debug.Log(" from upload task"+kvp.Key+"_ID:"+ID+"_result:"+contentLength.ToString());
+                        err_check = err_check + contentLength;
+                }
             }
 
         }
@@ -75,7 +81,7 @@ public class conn_img_uploader : MonoBehaviour
                 text = File.ReadAllBytes(path);
             }catch{
                 Debug.Log("img read error/maybe not entered");
-                return 0;
+                return 1;
             }
 
             string strImg = Convert.ToBase64String(text);
@@ -85,23 +91,26 @@ public class conn_img_uploader : MonoBehaviour
             form.AddField("name", _img_name);
             form.AddField("base64img", strImg);
         
-            using (UnityWebRequest www = UnityWebRequest.Post("http://91.245.254.86:80/test", form)) //"http://91.245.254.86:80/test"
+            using (UnityWebRequest www = UnityWebRequest.Post("http://91.245.254.86:80/img", form)) //"http://91.245.254.86:80/test"
             {
                 AsyncOperation asyncOperation = www.SendWebRequest();
                 while(!asyncOperation.isDone){
-                        Debug.Log("waiting");
+                        //Debug.Log("waiting");
                 }
                 Debug.Log(www.result);
                 if (www.result != UnityWebRequest.Result.Success)
                     {
                         Debug.Log(www.error);
-                        return 0;
+                
+                return 1;
                     }
                 else
                     {
                         Debug.Log("Form upload complete!"+www.result);
-                        try{File.Delete(path);SceneManager.UnloadSceneAsync("loading_scene");}catch{Debug.Log("couldnt delet pic");}
-                        return 1;
+                
+                       // try{File.Delete(path);  } catch{Debug.Log("couldnt delet pic");}
+                
+                return 0;
                     }
         }
 

@@ -38,7 +38,6 @@ public void load_ins(){
 
     }
     public void save_and_continue(){    
-        Debug.Log("save_and_continue");
         SceneManager.LoadScene("ins_page2", LoadSceneMode.Additive);
     }
     public void save_and_continue_2_to_3(){    
@@ -79,7 +78,18 @@ public void load_ins(){
     {
         SceneManager.UnloadSceneAsync("review");
     }
+    public static void load_loading()
+    {
 
+        SceneManager.LoadScene("loading_scene", LoadSceneMode.Additive);
+
+    }
+    public static void unload_loading()
+    {
+
+        SceneManager.UnloadSceneAsync("loading_scene");
+
+    }
     public void unload_loading_scene_appmanager(){    
         SceneManager.UnloadSceneAsync("loading_scene");
     }

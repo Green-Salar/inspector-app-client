@@ -1,4 +1,5 @@
 using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,8 +18,12 @@ public class s_controller : MonoBehaviour
     }
     void init()
     {
-        // caption += playerPrefsMANAGER.ins_list["ST"];
-        m_Dropdown.captionText.text = caption;
+        if (playerPrefsMANAGER.ins_list["SN"] != "-") {
+            caption = playerPrefsMANAGER.ins_list["SN"];
+            m_Dropdown.captionText.text = caption;
+            Color[] _colors = safty_vars.safty_colors;
+            safety_img.color = _colors[Int32.Parse(playerPrefsMANAGER.ins_list["SN"])];
+        }
     }
 
     void changeScript(List<string> m_DropOptions)

@@ -33,7 +33,7 @@ public class sql_handler : MonoBehaviour
            + ";";
         
          sqliteExecuter(SqlQuery);
-
+        create_or_connect_all_seprated(tableName);
     }
     public static void InsertInto(string tableName, Dictionary<string,string> inspection_dictionary){
 
@@ -50,16 +50,16 @@ public class sql_handler : MonoBehaviour
 
         if (lang == "0")
         {
-            RT = inspection_dictionary["RT"];
-            DC = inspection_dictionary["DC"];
-            DSC = inspection_dictionary["DSC"];
-            D = inspection_dictionary["D"];
-            SA = inspection_dictionary["SA"];
-            ST = inspection_dictionary["ST"];
-            SCA = inspection_dictionary["SCA"];
-            SUA = inspection_dictionary["SUA"];
-            RS = inspection_dictionary["RS"];
-            comment = inspection_dictionary["comment"]; 
+            RT = inspection_dictionary["RT"].Replace("\"", "in");
+            DC = inspection_dictionary["DC"].Replace("\"", "in");
+            DSC = inspection_dictionary["DSC"].Replace("\"", "in");
+            D = inspection_dictionary["D"].Replace("\"", "in");
+            SA = inspection_dictionary["SA"].Replace("\"", "in");
+            ST = inspection_dictionary["ST"].Replace("\"", "in");
+            SCA = inspection_dictionary["SCA"].Replace("\"", "in");
+            SUA = inspection_dictionary["SUA"].Replace("\"", "in");
+            RS = inspection_dictionary["RS"].Replace("\"", "in");
+            comment = inspection_dictionary["comment"].Replace("\"", "in"); 
         }
         else
         {
@@ -73,7 +73,7 @@ public class sql_handler : MonoBehaviour
             SCA = inspection_dictionary["SCAF"].Replace("'", " ");
             SUA = inspection_dictionary["SUAF"].Replace("'", " ");
             RS = inspection_dictionary["RSF"].Replace("'", " ");
-            comment = inspection_dictionary["commentF"].Replace("'", " "); 
+            comment = inspection_dictionary["commentF"].Replace("'", "\'"); 
         }
 
         img1      =  inspection_dictionary [ "img1"]    ;              
@@ -123,7 +123,7 @@ public class sql_handler : MonoBehaviour
     }
     
 
-     public static Dictionary<string,string> sql_dictionary_find_by_ID(string tableName , string insID ) {
+     public static Dictionary<string,string> find_by_ID(string tableName , string insID ) {
 
         Dictionary<string,string> ins_list = 
         new Dictionary<string,string>{};
@@ -202,7 +202,6 @@ public class sql_handler : MonoBehaviour
 
 
 public static string send_str_builder() {
-       string a = "author_1";
         string _sqlQuery = "Select insID,json from " + tableName + " ;" ;
         IDbConnection dbcon;
         IDbCommand dbcmd;

@@ -31,7 +31,7 @@ public class RS_handler : MonoBehaviour
         Clear_RSParent();
         string _sqlQuery = (Language_Manager.lang == 0 ?
             "Select RS,UN from " + RStableName + " where  DSC = '" + playerPrefsMANAGER.ins_list["DSC"] + "';" : "Select RSF,UN from " + RStableName + " where  DSCF = '" + playerPrefsMANAGER.ins_list["DSCF"] + "';");
-        
+        first_Instantiator(playerPrefsMANAGER.ins_list[Language_Manager.lang == 0 ? "RS" : "RSF"]);
         rsdict = sql_RS_dict(_sqlQuery);
         foreach (var i in rsdict.OrderByDescending(r => r.Value)) { 
             Instantiator(i.Key);
@@ -80,12 +80,24 @@ public class RS_handler : MonoBehaviour
     {
         string RS_str = togglePrinter_RS();
         //Debug.Log(defects_str);
-        if (Language_Manager.lang == 0)
+        if (Language_Manager.lang == 0) 
+        {
             playerPrefsMANAGER.ins_list["RS"] = RS_str;
-            Debug.Log("inserting in RS:-->" + RS_str);
+
+            playerPrefsMANAGER.ins_list["RSF"] = relats.string_translator(RStableName, RS_str, "RSF", "RS");
+
+            Debug.Log("inserting in RS:-->" + RS_str); 
+        }
+        
         if (Language_Manager.lang == 1)
+        {
+
             playerPrefsMANAGER.ins_list["RSF"] = RS_str;
+         
+            playerPrefsMANAGER.ins_list["RS"] = relats.string_translator(RStableName, RS_str, "RS", "RSF");
+
             Debug.Log("inserting in RSFF:-->" + RS_str);
+        }
     }
 
     void Clear_RSParent()
@@ -101,13 +113,14 @@ public class RS_handler : MonoBehaviour
         GameObject newtoggle = Instantiate(toggle) as GameObject;
         try { newtoggle.GetComponentInChildren<Text>().text = i; } catch { Debug.Log("failed to name toggle"); }
         newtoggle.transform.SetParent(RS_parentTransform, false);
-      //  if (i[0] == '#')
-      //  {
-           // Toggle _Toggle = newtoggle.GetComponent<Toggle>();
-            //_Toggle.onValueChanged.AddListener(delegate {
-            //    ToggleValueChanged(_Toggle);
-            //});
-        //}
+    }
+    void first_Instantiator(string i)
+    {
+        if (i == "-") return;
+        GameObject newtoggle = Instantiate(toggle) as GameObject;
+        try { newtoggle.GetComponentInChildren<Text>().text = i; } catch { Debug.Log("failed to name toggle"); }
+        newtoggle.transform.SetParent(RS_parentTransform, false);
+        newtoggle.GetComponent<Toggle>().isOn = true;
     }
     private Dictionary<string, int> sql_RS_dict(string _sqlQuery)
     {

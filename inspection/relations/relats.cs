@@ -55,16 +55,18 @@ public class relats : MonoBehaviour
     }
 
 
-    public static void Translator()
+    public void Translator()
     {
-
+        string D_notSeparated;
         if (lng == 0)
         {
             string RT = playerPrefsMANAGER.ins_list["RT"];
             string DC = playerPrefsMANAGER.ins_list["DC"];
             string DSC = playerPrefsMANAGER.ins_list["DSC"];
             sqlQuery = "Select RTF , DCF , DSCF from " + tableName + " where  RT = '" + RT + "' AND DC = '" + DC + "' AND DSC = '" + DSC + "' ;";
-
+            
+            D_notSeparated = playerPrefsMANAGER.ins_list["D"];
+            playerPrefsMANAGER.ins_list["DF"] = string_translator(tableName,  D_notSeparated, "DF", "D");
         }
         if (lng == 1)
         {
@@ -72,11 +74,83 @@ public class relats : MonoBehaviour
             string DC = playerPrefsMANAGER.ins_list["DCF"];
             string DSC = playerPrefsMANAGER.ins_list["DSCF"];
             sqlQuery = "Select RT , DC , DSC from " + tableName + " where  RTF = '" + RT + "' AND DCF = '" + DC + "' AND DSCF = '" + DSC + "' ;";
-
+            
+            D_notSeparated = playerPrefsMANAGER.ins_list["DF"];
+            playerPrefsMANAGER.ins_list["D"]= string_translator(tableName , D_notSeparated , "D", "DF") ;
         }
-        add_tranlation(sqliteExecuter_for_translation(sqlQuery));
+        
+        add_tranlation(sql_get_translations_rtdcdsc(sqlQuery));
     }
-    static void add_tranlation(List<string> vals)
+
+    public static string string_translator(string _tableName, string _notSeparated, string _select, string _where)
+    {
+        string mainSTR = "";
+
+        try
+        {
+            //string str;
+            IDbConnection dbcon;
+            IDbCommand dbcmd;
+            IDataReader reader;
+            string conn = SetDataBaseClass.SetDataBase(dbname + ".db");
+            dbcon = new SqliteConnection(conn);
+            dbcon.Open();
+
+
+            string _tempD;
+            foreach (var str in _notSeparated.Split(", "))
+            {
+
+                if (str.Contains("]"))
+                {
+                    _tempD ="#" + str.Split("]")[1];
+
+                    mainSTR += str.Split("]")[0]+"]";
+                }
+                else
+                {
+                    _tempD = str; ;
+                }
+                Debug.Log(_tempD);
+                dbcmd = dbcon.CreateCommand();
+                dbcmd.CommandText = "SELECT " + _select + " from " + _tableName + " WHERE " + _where + " ='" + _tempD + "' ;";
+                reader = dbcmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    string t = reader.GetString(0).TrimStart('#');
+                    Debug.Log(t);
+                    try
+                    {
+                        _ = !mainSTR.Contains(t) ? mainSTR = mainSTR + t : t = ""; 
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log("reader sql problem in splitter finding translation: ->"+ "SELECT " + _select + " from " + _tableName + " WHERE " + _where + " =' " + _tempD + "';");
+                        Debug.Log(e);
+                    }
+                }
+
+                mainSTR += ", ";
+
+                reader.Close();
+                reader = null;
+                dbcmd.Dispose();
+                dbcmd = null;
+            }
+            Debug.Log("Done translation : " + mainSTR);
+            dbcon.Close();
+            dbcon = null;
+        }
+        catch (Exception e)
+        {
+            Debug.Log("sql problem in splitter" + _notSeparated + _select+ _where );
+            Debug.Log("ok till: " + mainSTR);
+            Debug.Log(e);
+        }
+        return mainSTR;
+    }
+    
+    void add_tranlation(List<string> vals)
     {
         if(lng == 0)
         {
@@ -143,7 +217,7 @@ public class relats : MonoBehaviour
         
     }
 
-    public static List<string> sqliteExecuter_for_translation(string _sqlQuery)
+    public static List<string> sql_get_translations_rtdcdsc(string _sqlQuery)
     {
         List<string> list = new List<string> { };
         try

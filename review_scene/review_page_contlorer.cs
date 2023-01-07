@@ -62,7 +62,7 @@ public class review_page_contlorer : MonoBehaviour
         Sprite newSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f, 1, SpriteMeshType.FullRect);
         img[imgNum].sprite = newSprite;
           }catch(Exception e) { 
-              Debug.Log("no image number."+imgNum);
+              Debug.Log("no image number."+imgNum+"-"+e.ToString());
           }    
     } 
     
