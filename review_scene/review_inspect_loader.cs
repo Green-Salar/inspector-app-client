@@ -118,9 +118,9 @@ public class review_inspect_loader : MonoBehaviour
     // the coroutine
     private IEnumerator Count(Dictionary<string, string>  insList)
     {
-        SceneManager.LoadScene("ins_review_1", LoadSceneMode.Additive);
-        yield return new WaitForSeconds(.2f);
-        playerPrefsMANAGER.ins_list = insList;
+        SceneManager.LoadScene("pre_review_scene", LoadSceneMode.Additive);
+        yield return new WaitForSeconds(.1f);
+        review_text_manager.ins_list = insList;
     }
 
 }
